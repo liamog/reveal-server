@@ -12,7 +12,7 @@
  , fs = require('fs');
 
  var app = express();
- 
+
  dust.optimizers.format = function(ctx, node) { return node };
 
  app.configure(function(){
@@ -21,9 +21,8 @@
     "reveal");
   dust.loadSource(compiled);
 
+app.enable('strict routing');
   app.set('port', process.env.PORT || 3000);
-  //app.set('views', __dirname + '/views');
-  //app.set('view engine', 'jade');
   app.use(express.favicon());
   app.use(express.logger('dev'));
   app.use(express.bodyParser());
@@ -35,9 +34,11 @@
    files.forEach(function(dir) {
     var url = '/' + dir;
     var dirPath = path.join(__dirname, 'presentations', dir, 'app');
+
+    app.all(url, function(req, res) { res.redirect(url + '/'); });
     
     console.log("Found Pressie - configuring url=" + url + " dir=" + dirPath);
-    app.get(url, function(req, res){
+    app.get(url +'/' , function(req, res){
       fs.readFile(path.join(dirPath, "index.html"), "utf-8", function(err, data){
         // Here we use the dust templating to 
         // insert our slides and the title.
@@ -52,22 +53,11 @@
     app.use(url, express.static(path.join(__dirname, 'reveal.js')));
   });
  });
-
-
 });
 
 app.configure('development', function(){
   app.use(express.errorHandler());
 });
-
-
-
-
- //app.get('/', routes.index);
- app.get('/users', user.list);
-
-
-
 
  http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
