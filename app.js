@@ -59,6 +59,43 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
- http.createServer(app).listen(app.get('port'), function(){
+var server = http.createServer(app);
+  var io =  require('socket.io').listen(server);
+  server.listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
+});
+
+
+
+io.sockets.on('connection', function(socket) {
+        console.log("socket connected");
+        socket.on('fragmenthidden', function(data) {
+                socket.broadcast.emit('fragmenthidden', data);
+                console.log("fragmenthidden - data=");
+                console.log(data);
+        });
+
+        socket.on('fragmentshown', function(data) {
+                socket.broadcast.emit('fragmentshown', data);
+                console.log("fragmentshown - data=");
+                console.log(data);
+        });
+
+        socket.on('slidechanged', function(slideData) {
+                socket.broadcast.emit('slidedata', slideData);
+                console.log("slidechanged - data=");
+                console.log(slideData);
+        });
+
+        socket.on('reload', function(slideData) {
+                socket.broadcast.emit('reload', slideData);
+                console.log("reload - data=");
+                console.log(slideData);
+        });
+
+        socket.on('controller', function(command) {
+                socket.broadcast.emit('controller', command);
+                console.log("controller - data=");
+                console.log(command);
+        });
 });
