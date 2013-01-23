@@ -42,7 +42,7 @@
     app.use(presentation.url, express.static(presentation.path));
     app.use(presentation.url, express.static(path.join(__dirname, 'reveal.js')));
   })
-
+  app.use("/", express.static(path.join(__dirname, 'public')));
 });
 
 app.configure('development', function(){
@@ -59,6 +59,14 @@ server.listen(app.get('port'), function(){
 
 io.sockets.on('connection', function(socket) {
   console.log("socket connected");
+  socket.emit("ping", "pingdata");
+  
+  socket.on('pingresponse', function(data) {
+    console.log("got pingresponse - data=");
+    console.log(data);
+  });
+
+
   socket.on('fragmenthidden', function(data) {
     socket.broadcast.emit('fragmenthidden', data);
     console.log("fragmenthidden - data=");
