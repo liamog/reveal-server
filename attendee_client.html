@@ -1,0 +1,12 @@
+<script src="/socket.io/socket.io.js"></script>
+<script>
+(function() {
+
+	var socket = io.connect( '{{socketurl}}' );
+
+	socket.on('slidedata', function(data) {
+		console.log(data);
+		Reveal.slide(data.h, data.v, data.f);
+		});
+}());
+</script>

@@ -1,0 +1,107 @@
+<script src="/socket.io/socket.io.js"></script>
+<script>
+(function() {
+
+	var socket = io.connect( '{{socketurl}}' );
+	var socketId = "current_presenter";
+	
+	function toArray( o ) {
+		return Array.prototype.slice.call( o );
+	}
+
+	function sendSlideChanged(){
+		var slideData =calculateIndices();
+
+		console.log('sending ' + JSON.stringify(slideData));
+		socket.emit('slidechanged', slideData);
+	}
+
+	function calculateIndices()
+	{
+		var slide = Reveal.getCurrentSlide();
+		var indices = Reveal.getIndices();
+		indices.f = 0;
+
+		var fragments = slide.querySelectorAll( '.fragment' );
+
+		toArray( fragments ).forEach( function( fragment, indexf ) {
+			if(fragment.classList.contains( 'visible' ))
+				indices.f = indexf + 1;
+		} );
+		return indices;
+	}
+
+	Reveal.addEventListener( 'slidechanged', function( event ) {
+		console.log('received a slidechanged event');
+		console.log( event);
+		sendSlideChanged();
+	} );
+
+	Reveal.addEventListener( 'fragmentshown', function( event ) {
+
+		console.log('received a fragmentshown event');
+		console.log( event);
+		sendSlideChanged();
+	} );
+
+	Reveal.addEventListener( 'fragmenthidden', function( event ) {
+		console.log('received a fragmenthidden event');
+		console.log( event);
+		sendSlideChanged();
+	} );
+
+	socket.on('controller', function(data) {
+		console.log("received controller event");
+		console.log(data);
+		switch(data.command)
+		{
+			case "up":
+			Reveal.up();
+			break;
+
+			case "down":
+			Reveal.down();
+			break;
+
+			case "left":
+			Reveal.left();
+			break;
+			
+			case "right":
+			Reveal.right();
+			break;
+
+			case "next":
+			Reveal.next();
+			break;
+
+			case "prev":
+			Reveal.prev();
+			break;
+
+			case "restart":
+			Reveal.restart();
+			var reloaddata = {
+				reload : "yes",
+				socketId : socketId	};
+				socket.emit('reload', reloaddata);
+				break;
+
+				case "fullscreen":
+				Reveal.fullscreen();
+				break;
+			}
+		});
+
+
+	console.log('sending reload to any connected atendees');
+	var reloaddata = {
+		reload : "yes",
+		socketId : socketId	};
+		socket.emit('reload', reloaddata);
+
+   		// Now we send a slide changed event to move the current slide
+		sendSlideChanged();
+
+}());
+</script>

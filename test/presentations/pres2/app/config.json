@@ -1,3 +1,6 @@
 {
-	"title" : "Presentation 2 - Title"
+	"title" : "Presentation 2 - Title",
+	"center": false,
+	"theme": "ciscosimple",
+	"transition": "other"
 }
