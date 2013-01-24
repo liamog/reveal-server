@@ -21,11 +21,9 @@
 
  app.configure(function(){
   var template = path.join(__dirname, 'reveal.js', 'reveal_template.html');
+  var controller = path.join(__dirname, 'controller_phone.html');
   var presenter_script = fs.readFileSync(path.join(__dirname, 'presenter_client.html'), 'utf8');
   var attendee_script = fs.readFileSync(path.join(__dirname, 'attendee_client.html'), 'utf8');
-
-
-
 
   app.enable('strict routing');
   app.set('port', process.env.PORT || 3000);
@@ -42,6 +40,7 @@
     app.all(presentation.url, function(req, res) { res.redirect(presentation.url + '/'); });
     app.all(presentation.url + '/attendee', function(req, res) { res.redirect(presentation.url + '/attendee/'); });
     app.all(presentation.url + '/presenter', function(req, res) { res.redirect(presentation.url + '/presenter/'); });
+    app.all(presentation.url + '/controller', function(req, res) { res.redirect(presentation.url + '/controller/'); });
     
     // standalone presentation
     createRoute(app, presentation, template);
@@ -51,6 +50,7 @@
     attendee.url = presentation.url + '/attendee'
     attendee.extrascript=  expandClientScript(attendee_script, presentation);
     attendee.controls = false;
+    attendee.keyboard = false;
     createRoute(app, attendee, template);
 
     //presenter
@@ -61,6 +61,14 @@
     
     presentationWebSocketState(presentation);
     app.use(presentation.url, express.static(presentation.path));
+
+    app.get(presentation.url + '/controller/', function(req,res){
+      fs.readFile(controller, function(err, data) {
+        res.setHeader('Content-Type', 'text/html');
+        res.send(mustache.to_html(expandClientScript(data.toString(), presentation), presentation));
+      });
+    });
+
   })
   // Expose this site's public folder for misc items
   app.use("/", express.static(path.join(__dirname, 'public')));

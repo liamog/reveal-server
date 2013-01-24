@@ -1,0 +1,47 @@
+<html>
+<head>
+		<link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
+		<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+		<script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
+
+		<title>Control</title>
+</head>
+<body>
+	<div data-role="page">
+
+	<div data-role="header">
+		<h1>Remote Controller</h1>
+	</div><!-- /header -->
+
+	<div data-role="content">	
+		<p>Hello world</p>		
+	</div><!-- /content -->
+
+</div><!-- /page -->
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+$(document).bind('pageinit', function(){
+	var socket = io.connect( '{{socketurl}}' );
+
+	$( document ).bind( "swipeleft", function( event, data ){
+
+		// Let the framework know we're going to handle things.
+		event.preventDefault();
+		socket.send('controller', {command:"left"});
+	});
+	$( document ).bind( "swiperight", function( event, data ){
+
+		// Let the framework know we're going to handle things.
+		event.preventDefault();
+		socket.send('controller', {command:"right"});
+	});
+
+});
+</script>
+
+</body>
+</html>
+
+
+
