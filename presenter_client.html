@@ -3,17 +3,28 @@
 (function() {
 
 	var socket = io.connect( '{{socketurl}}' );
-	var socketId = "current_presenter";
+	var lastSlide = {};
 	
 	function toArray( o ) {
 		return Array.prototype.slice.call( o );
 	}
 
+	function compareObjects(a, b){
+		for( var i in a ) {
+			if(a[ i ] != b[ i ]){
+				return false;
+			}
+		}
+		return true;
+	}
+
 	function sendSlideChanged(){
 		var slideData =calculateIndices();
-
-		console.log('sending ' + JSON.stringify(slideData));
-		socket.emit('slidechanged', slideData);
+		if( !compareObjects(slideData, lastSlide)){
+			console.log('sending ' + JSON.stringify(slideData));
+			socket.emit('slidechanged', slideData);
+			lastSlide = slideData;
+		}
 	}
 
 	function calculateIndices()
@@ -50,6 +61,15 @@
 		sendSlideChanged();
 	} );
 
+	socket.on('slidedata', function(data) {
+		
+		if(! compareObjects(data, calculateIndices() )) {
+			// Received new slide position , updating.
+			console.log('received new slide position');
+			Reveal.slide(data.h, data.v, data.f);
+		}
+	});
+
 	socket.on('controller', function(data) {
 		console.log("received controller event");
 		console.log(data);
@@ -79,29 +99,11 @@
 			Reveal.prev();
 			break;
 
-			case "restart":
-			Reveal.restart();
-			var reloaddata = {
-				reload : "yes",
-				socketId : socketId	};
-				socket.emit('reload', reloaddata);
-				break;
-
-				case "fullscreen":
-				Reveal.fullscreen();
-				break;
-			}
-		});
+		}
+	});
 
 
-	console.log('sending reload to any connected atendees');
-	var reloaddata = {
-		reload : "yes",
-		socketId : socketId	};
-		socket.emit('reload', reloaddata);
-
-   		// Now we send a slide changed event to move the current slide
-		sendSlideChanged();
-
+	// Now we send a slide changed event to move the current slide
+	sendSlideChanged();
 }());
 </script>
