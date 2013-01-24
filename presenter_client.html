@@ -15,6 +15,12 @@
 				return false;
 			}
 		}
+		// fugly , but compares in both directions to make sure they are exactly the same
+		for( var i in b ) {
+			if(a[ i ] != b[ i ]){
+				return false;
+			}
+		}
 		return true;
 	}
 
