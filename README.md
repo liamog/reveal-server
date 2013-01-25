@@ -18,11 +18,11 @@ Setup
 
 After cloning to the folder of your choice, create a subfolder ( or link to ) for each presentation you wish to serve.
 Each presesntation folder has a specific template that must be followed. See https://github.com/liamog/reveal.js-template
-TODO - make this a submodule
+This sample is included here as a git submodule.
 
 I have a ( very slightly) modified version of the master reveal.js repo forked here. https://github.com/liamog/reveal.js
 You must use this version and it must be located in the reveal.js subfolder of this repo. 
-TODO - make this a submodule
+This is achieved by using a git submodule.
 
 Usage
 -----
