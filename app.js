@@ -18,6 +18,9 @@
 
  var isProduction = (env == "production");
 
+ var config = JSON.parse(fs.readFileSync(path.join(__dirname, isProduction ? "config_production.json": "config_dev.json")));
+
+ console.log("config is " + JSON.stringify(config));
 
  app.configure(function(){
   var template = path.join(__dirname, 'reveal.js', 'reveal_template.html');
