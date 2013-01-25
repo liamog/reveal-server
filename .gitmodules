@@ -1,0 +1,3 @@
+[submodule "presentations/template"]
+	path = presentations/template
+	url = https://liamog@github.com/liamog/reveal.js-template.git

@@ -20,7 +20,7 @@ var presentations = exports = module.exports = {
 					var presentation = {};
 					presentation.name = dir;
 					presentation.url = '/' + dir;
-					presentation.path = path.join(folder, dir, 'app');
+					presentation.path = path.join(folder, dir, 'content');
 					fs.readFile(path.join(presentation.path, "config.json"), "utf8", function(err, data) {
 						if(!err){
 						// we have some title data.
