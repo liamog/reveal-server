@@ -99,6 +99,7 @@ function createRoute(app, presentation, template){
   app.get(presentation.url + '/' , function(req, res){
     fs.readFile(template, function(err, data) {
       res.setHeader('Content-Type', 'text/html');
+      res.setHeader('Cache-Control: max-age=1, must-revalidate')
       res.send(mustache.to_html(data.toString(), presentation));
     });
   });
