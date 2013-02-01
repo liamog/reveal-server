@@ -1,0 +1,16 @@
+<html>
+<head>
+	<title>Reveal.js Presentation Server</title>
+</head>
+<body>
+<!-- use a mustache template per presentation -->
+{{#list}}
+<section> 
+	<h1>Presentation: {{name}} </h1></section>
+	<a href="/{{name}}">View</a>
+	<a href="/{{name}}/presenter">Presenter</a>
+	<a href="/{{name}}/attendee">Attendee</a>
+{{/list}}
+
+</body>
+</html>

@@ -25,6 +25,7 @@
  app.configure(function(){
   var template = path.join(__dirname, 'reveal.js', 'reveal_template.html');
   var controller = path.join(__dirname, 'controller_phone.html');
+  var index = path.join(__dirname, 'index.html');
   var presenter_script = fs.readFileSync(path.join(__dirname, 'presenter_client.html'), 'utf8');
   var attendee_script = fs.readFileSync(path.join(__dirname, 'attendee_client.html'), 'utf8');
 
@@ -73,6 +74,12 @@
     });
 
   })
+  app.get('/', function(req,res){
+      fs.readFile(index, function(err, data) {
+        res.setHeader('Content-Type', 'text/html');
+        res.send(mustache.to_html(data.toString(), presentations));
+      });
+    });
   // Expose this site's public folder for misc items
   app.use("/", express.static(path.join(__dirname, 'public')));
 });
@@ -89,10 +96,12 @@ server.listen(app.get('port'), function(){
 
 function expandClientScript(script, presentation)
 {
-  if(isProduction)
-    return mustache.to_html(script, {socketurl : "http://logorman-revealjs:8888" + presentation.url});
-  else // TODO: hmm how to make this more configurable - read from a .json file I guess.
-    return mustache.to_html(script, {socketurl : "http://localhost:3000" + presentation.url});
+  return mustache.to_html(script, {socketurl : config.websocketurl + presentation.url});
+
+  // if(isProduction)
+  //   return mustache.to_html(script, {socketurl : "http://logorman-revealjs:8888" + presentation.url});
+  // else // TODO: hmm how to make this more configurable - read from a .json file I guess.
+  //   return mustache.to_html(script, {socketurl : "http://localhost:3000" + presentation.url});
 }
 
 function createRoute(app, presentation, template){
